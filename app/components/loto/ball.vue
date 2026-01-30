@@ -1,30 +1,41 @@
-<script setup>
-    const props = defineProps({
-        number: Number,
-        drawn: { type: Boolean, default : false },
-        config: {
-            type: Object,
-            default: () => ({
-                hoverable: true,
-                clickable : true
-            })
-        }
+<script setup lang="ts">
+import type { BallConfig } from '~/types/bingo'
+
+/**
+ * Single bingo ball component.
+ * Configurable for different contexts (admin: clickable, client: display only).
+ */
+interface Props {
+    number: number
+    drawn?: boolean
+    config?: BallConfig
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    drawn: false,
+    config: () => ({
+        hoverable: true,
+        clickable: true
     })
+})
 
-    const emits = defineEmits(["click"]);
+const emits = defineEmits<{
+    click: []
+}>()
 
-    function handleClick() {
-        if (props.drawn)
-            return
-        emits("click");
-    }
-
+/** Only emit click if ball hasn't been drawn yet */
+function handleClick(): void {
+    if (props.drawn)
+        return
+    emits("click")
+}
 </script>
 
 <template>
     <div 
         @click.prevent="handleClick" 
         class="ball" 
+        :data-number="number"
         :class="[
             drawn ? 'drawn': 'not-drawn', 
             config.hoverable ? 'hoverable': '',

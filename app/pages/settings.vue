@@ -1,9 +1,10 @@
-<script setup>
-import BingoCreateForm from '~/components/settings/bingo-create-form.vue';
+<script setup lang="ts">
+import CreateForm from '~/components/loto/CreateForm.vue'
+import type { BingoFormData } from '~/types/bingo'
 
-const bingoStore = useBingoStore();
-    
-function createBingo(bingoSettings){
+const bingoStore = useBingoStore()
+
+function createBingo(bingoSettings: BingoFormData): void {
   bingoStore.createBingo(bingoSettings)
 }
 </script>
@@ -15,7 +16,7 @@ function createBingo(bingoSettings){
     <!-- Nav TODO -->
 
 
-    <BingoCreateForm @bingo-created="createBingo($event)"/>
+    <CreateForm @bingo-created="createBingo($event)"/>
 
 
     <!-- Bingo List -->

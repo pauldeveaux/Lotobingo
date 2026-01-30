@@ -1,13 +1,17 @@
-<script setup>
-import { useBingoStore } from '~/stores/useBingoStore';
+<script setup lang="ts">
+/**
+ * Displays the history of drawn numbers with ability to cancel/undo.
+ * List is displayed in reverse order (most recent at top).
+ */
+import { useBingoStore } from '~/stores/useBingoStore'
 
-const bingoStore = useBingoStore();
-const { connect, syncBingo } = useWebSocket();
+const bingoStore = useBingoStore()
+const { syncBingo } = useWebSocket()
 
-
-function cancelNumber(number) {
-    bingoStore.cancelDraw(number);
-    syncBingo(bingoStore.bingo);
+/** Removes a number from the draw history and syncs to clients */
+function cancelNumber(number: number): void {
+    bingoStore.cancelDraw(number)
+    syncBingo(bingoStore.bingo)
 }
 </script>
 
@@ -31,24 +35,33 @@ function cancelNumber(number) {
     padding-right: 4px;
 }
 
+
 ul {
     display: flex;
     flex-direction: column-reverse;
+    align-items: flex-end;
     gap: 0.5rem;
     padding: 0;
     margin: 0;
+}
+
+h3 {
+    align-items: flex-end;
+    text-align: end;
+    margin-right: 20px;
 }
 
 .historic-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 0.5rem;
 
-    width: 140px;
-    padding: 0.4rem 0.6rem;
+    width: 100px;
+    padding: 0.3rem 0.5rem;
 
     background: #f6f6f6;
-    border-radius: 8px;
+    border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 
     transition: background 0.2s ease, transform 0.1s ease;
@@ -99,6 +112,7 @@ ul {
 
     padding: 0.2rem 0.4rem;
     border-radius: 4px;
+    flex-shrink: 0;
 
     transition: color 0.2s ease, background 0.2s ease;
 }
@@ -108,4 +122,25 @@ ul {
     background: rgba(192, 57, 43, 0.1);
 }
 
+@media (max-width: 900px) {
+    .historic-row {
+        padding: 0.3rem 0.5rem;
+    }
+    .historic-row p {
+        font-size: 1rem;
+    }
+    .delete {
+        font-size: 0.75rem;
+        padding: 0.15rem 0.3rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .historic-row {
+        padding: 0.25rem 0.4rem;
+    }
+    .historic-row p {
+        font-size: 0.9rem;
+    }
+}
 </style>

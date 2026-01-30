@@ -1,21 +1,24 @@
-<script setup>
-import { useBingoStore } from '~/stores/useBingoStore';
-import ValidateButton from '~/components/buttons/validate-button.vue';
-    const bingoStore = useBingoStore();
-    const emits = defineEmits(["add-number"]);
+<script setup lang="ts">
+import { useBingoStore } from '~/stores/useBingoStore'
+import ValidateButton from '~/components/ui/ValidateButton.vue'
 
+const bingoStore = useBingoStore()
+const emits = defineEmits<{
+    'add-number': [number: number]
+}>()
 
-    const number = ref(null);
-    
+const number = ref<number | null>(null)
 
-    function generateRandom() {
-        number.value = bingoStore.remainingNumbers[Math.floor(Math.random() * bingoStore.remainingNumbers.length)];
-    }
+function generateRandom(): void {
+    number.value = bingoStore.remainingNumbers[Math.floor(Math.random() * bingoStore.remainingNumbers.length)]
+}
 
-    function addNumber() {
+function addNumber(): void {
+    if (number.value !== null) {
         emits('add-number', number.value)
-        number.value = "";
     }
+    number.value = null
+}
 </script>
 
 <template>

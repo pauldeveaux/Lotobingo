@@ -1,3 +1,6 @@
+<script setup lang="ts">
+</script>
+
 <template>
     <header>
         <NuxtLink to="/">Accueil</NuxtLink>
@@ -27,5 +30,6 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-x: hidden;
 }
 </style>

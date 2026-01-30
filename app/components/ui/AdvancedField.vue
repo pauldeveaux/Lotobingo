@@ -1,13 +1,15 @@
-<script setup>
-    defineProps({
-        label: String
-    })
+<script setup lang="ts">
+interface Props {
+    label?: string
+}
 
-    const showDetails = ref(false);
+defineProps<Props>()
 
-    function toggleDetails() {
-        showDetails.value = !showDetails.value;
-    }
+const showDetails = ref(false)
+
+function toggleDetails(): void {
+    showDetails.value = !showDetails.value
+}
 </script>
 
 <template>

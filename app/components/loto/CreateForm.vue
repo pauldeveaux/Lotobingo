@@ -1,19 +1,21 @@
-<script setup>
-  import AdvancedField from '~/components/form/advanced-field.vue';
+<script setup lang="ts">
+import AdvancedField from '~/components/ui/AdvancedField.vue'
+import type { BingoFormData } from '~/types/bingo'
 
-  const emits = defineEmits(["bingo-created"])
+const emits = defineEmits<{
+    'bingo-created': [data: BingoFormData]
+}>()
 
-  
-  const form = reactive({
+const form = reactive<BingoFormData>({
     name: '',
     type: 'Carton plein',
     ballsNumber: 90,
-  })
+})
 
-  function createBingo() {
-    emits('bingo-created', { ...form });
-    form.name = "";
-  }
+function createBingo(): void {
+    emits('bingo-created', { ...form })
+    form.name = ""
+}
 </script>
 
 <template>
