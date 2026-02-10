@@ -4,7 +4,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     '@pinia/nuxt',
-    '@nuxt/test-utils/module'
+    '@nuxt/test-utils/module',
+    'pinia-plugin-persistedstate/nuxt'
   ],
 
   nitro : {

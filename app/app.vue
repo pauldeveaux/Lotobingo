@@ -10,7 +10,18 @@
 </template>
 
 <style>
-body {
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
   margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 </style>

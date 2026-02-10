@@ -77,13 +77,49 @@ describe('useBingoStore', () => {
     })
 
 
+    describe('nextId', () => {
+        it('returns next sequential ID when no gaps', () => {
+            // Store starts with bingo ID 1
+            expect(store.nextId).toBe(2)
+        })
+
+        it('fills gap at the beginning', () => {
+            store.createBingo({ name: "Second", type: "Quine", maxNumber: 75, prizeId: null })
+            // Now we have IDs [1, 2]
+            delete store.bingos[1]
+            // Now we have IDs [2]
+
+            expect(store.nextId).toBe(1)
+        })
+
+        it('fills gap in the middle', () => {
+            store.createBingo({ name: "Second", type: "Quine", maxNumber: 75, prizeId: null })
+            store.createBingo({ name: "Third", type: "Quine", maxNumber: 75, prizeId: null })
+            // Now we have IDs [1, 2, 3]
+            delete store.bingos[2]
+            // Now we have IDs [1, 3]
+
+            expect(store.nextId).toBe(2)
+        })
+
+        it('returns max + 1 when no gaps exist', () => {
+            store.createBingo({ name: "Second", type: "Quine", maxNumber: 75, prizeId: null })
+            store.createBingo({ name: "Third", type: "Quine", maxNumber: 75, prizeId: null })
+            // Now we have IDs [1, 2, 3]
+
+            expect(store.nextId).toBe(4)
+        })
+    })
+
+
     describe('createBingo', () => {
 
         it('creates a new bingo at the next ID', () => {
             const bingoSettings = {
                 name: "My Bingo",
-                type: "Quine",
-                ballsNumber: 75
+                type: "Quine" as const,
+                maxNumber: 75,
+                prizeId: null
             }
             const bingo = store.createBingo(bingoSettings)
 
@@ -100,7 +136,7 @@ describe('useBingoStore', () => {
 
     describe('changeCurrentBingo', () => {
         beforeEach(() => {
-            store.createBingo({ name: "Second", type: "Quine", ballsNumber: 50 })
+            store.createBingo({ name: "Second", type: "Quine", maxNumber: 50, prizeId: null })
         })
 
         it('switches to an existing bingo', () => {
@@ -117,6 +153,56 @@ describe('useBingoStore', () => {
 
         it('throws if bingo ID does not exist', () => {
             expect(() => store.changeCurrentBingo(999)).toThrow("999 not found in registered bingos")
+        })
+    })
+
+
+    describe('sortedBingos', () => {
+        it('returns bingos sorted by order', () => {
+            store.createBingo({ name: "Second", type: "Quine", maxNumber: 75, prizeId: null })
+            store.createBingo({ name: "Third", type: "Quine", maxNumber: 75, prizeId: null })
+
+            const sorted = store.sortedBingos
+
+            expect(sorted[0].settings.name).toBe("Tirage #1")
+            expect(sorted[1].settings.name).toBe("Second")
+            expect(sorted[2].settings.name).toBe("Third")
+        })
+
+        it('respects order after reordering', () => {
+            store.createBingo({ name: "Second", type: "Quine", maxNumber: 75, prizeId: null })
+            store.createBingo({ name: "Third", type: "Quine", maxNumber: 75, prizeId: null })
+
+            // Reverse the order: Third, Second, First
+            store.reorderBingos([3, 2, 1])
+
+            const sorted = store.sortedBingos
+            expect(sorted[0].settings.name).toBe("Third")
+            expect(sorted[1].settings.name).toBe("Second")
+            expect(sorted[2].settings.name).toBe("Tirage #1")
+        })
+    })
+
+
+    describe('reorderBingos', () => {
+        beforeEach(() => {
+            store.createBingo({ name: "Second", type: "Quine", maxNumber: 75, prizeId: null })
+            store.createBingo({ name: "Third", type: "Quine", maxNumber: 75, prizeId: null })
+        })
+
+        it('updates order values based on array position', () => {
+            store.reorderBingos([2, 3, 1])
+
+            expect(store.bingos[2].order).toBe(0)
+            expect(store.bingos[3].order).toBe(1)
+            expect(store.bingos[1].order).toBe(2)
+        })
+
+        it('ignores non-existent IDs', () => {
+            store.reorderBingos([1, 999, 2])
+
+            expect(store.bingos[1].order).toBe(0)
+            expect(store.bingos[2].order).toBe(2)
         })
     })
 })

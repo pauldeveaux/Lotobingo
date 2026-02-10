@@ -1,0 +1,66 @@
+/* Shared styles for settings pages */
+
+/* Page title with gradient first letter — usable on any settings page */
+.settings-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.settings-title::first-letter {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Editor page layout (bingos, prizes, sponsors) */
+.settings-editor-page {
+  width: 100%;
+}
+
+.settings-editor-page h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.settings-editor-page h2::first-letter {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.settings-editor-content {
+  display: flex;
+  justify-content: center;
+}
+
+.settings-editor-sidebar {
+  position: fixed;
+  right: 5%;
+  top: 180px;
+  width: 280px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+@media (min-width: 1200px) {
+  .settings-editor-sidebar {
+    width: 350px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .settings-editor-sidebar {
+    width: 420px;
+  }
+}

@@ -1,0 +1,93 @@
+<script setup>
+const props = defineProps({
+    name: String,
+    image: String | undefined
+})
+</script>
+
+<template>
+  <div class="sponsor-showcase">
+    <div class="sponsor-badge">SPONSOR</div>
+    <img
+      v-if="image"
+      :src="image"
+      :alt="name"
+      class="sponsor-image"
+    />
+    <div class="sponsor-details">
+      <p class="sponsor-name">{{ name }}</p>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.sponsor-showcase {
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--theme-sponsor-panel-color, white);
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sponsor-badge {
+    padding: 0.25rem 0.75rem;
+    background: var(--theme-sponsor-badge-color, #3b82f6);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+}
+
+.sponsor-image {
+    width: var(--theme-sponsor-image-size, 300px);
+    height: var(--theme-sponsor-image-size, 300px);
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.sponsor-details {
+    text-align: center;
+    margin-top: 0.75rem;
+}
+
+.sponsor-name {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--theme-sponsor-text-color, #374151);
+}
+
+@media (max-width: 768px) {
+    .sponsor-showcase {
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .sponsor-image {
+        width: 70px;
+        height: 70px;
+    }
+
+    .sponsor-name {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .sponsor-showcase {
+        position: relative;
+        bottom: auto;
+        right: auto;
+        margin: 1rem auto;
+    }
+}
+</style>

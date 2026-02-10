@@ -1,4 +1,6 @@
 // Central type definitions for the bingo application
+import type { Sponsor } from './sponsor'
+export type { Sponsor } from './sponsor'
 
 export type BingoType = 'Carton plein' | 'Quine' | 'Double quine'
 
@@ -11,15 +13,19 @@ export interface BingoSettings {
 
 export interface Bingo {
   id: number
+  order: number
   drawnNumbers: number[]
   isFinished: boolean
   settings: BingoSettings
+  prizeIds: number[]
 }
 
 export interface BingoState {
+  lotoName: string
+  lotoSubtitle: string
+  lotoLogo: string | null
   bingos: Record<number, Bingo>
   currentBingoId: number
-  lastId: number | null
 }
 
 export interface BallConfig {
@@ -33,12 +39,40 @@ export interface Position {
 }
 
 export interface WebSocketMessage {
-  type: 'SYNC' | 'REQUEST_SYNC'
+  type: 'SYNC' | 'SYNC_PRIZE' | 'SYNC_SPONSOR' | 'REQUEST_SYNC'
   bingo?: Bingo
+  lotoName?: string
+  lotoSubtitle?: string
+  lotoLogo?: string | null
+  prize?: Prize | null
+  sponsor?: Sponsor | null
 }
 
 export interface BingoFormData {
   name: string
   type: BingoType
-  ballsNumber: number
+  maxNumber: number
+  prizeIds: number[]
+}
+
+// Prize types
+export interface Prize {
+  id: number
+  name: string
+  value: number
+  photo: string | null
+  providerName: string | null
+  providerImage: string | null
+}
+
+export interface PrizeFormData {
+  name: string
+  value: number
+  photo: string | null
+  providerName: string | null
+  providerImage: string | null
+}
+
+export interface PrizeState {
+  prizes: Record<number, Prize>
 }

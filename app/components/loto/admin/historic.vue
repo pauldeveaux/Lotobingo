@@ -6,73 +6,104 @@
 import { useBingoStore } from '~/stores/useBingoStore'
 
 const bingoStore = useBingoStore()
-const { syncBingo } = useWebSocket()
+const emit = defineEmits<{
+    'cancel': [number:number]
+}>();
 
-/** Removes a number from the draw history and syncs to clients */
-function cancelNumber(number: number): void {
-    bingoStore.cancelDraw(number)
-    syncBingo(bingoStore.bingo)
-}
+const reversedNumbers = computed(() => [...bingoStore.drawnNumbers].reverse())
+
 </script>
 
 <template>
-    <div class="overflow-wrapper">
-        <h3>Historique</h3>
-        <TransitionGroup tag="ul" name="historic-row">
-            <li  v-for="number in bingoStore.drawnNumbers" :key="number" class="historic-row">
-                    <p>{{ number }}</p>
-                    <button @click="cancelNumber(number)" class="delete">X</button>
-            </li>
-        </TransitionGroup>
+    <div class="historic-container" role="region" aria-labelledby="historic-title">
+        <h3 id="historic-title">Historique</h3>
+        <div class="overflow-wrapper">
+            <TransitionGroup tag="ul" name="historic-row" aria-label="Drawn numbers history" :key="bingoStore.currentBingoId">
+                <li v-for="number in reversedNumbers" :key="number" class="historic-row">
+                        <p>{{ number }}</p>
+                        <button @click="emit('cancel',number)" class="delete" :aria-label="`Remove number ${number}`">X</button>
+                </li>
+            </TransitionGroup>
+        </div>
     </div>
 </template>
 
 <style scoped>
-.overflow-wrapper {
-    max-height: 40vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-right: 4px;
+.historic-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
 }
 
+h3 {
+    text-align: start;
+    margin: 0;
+    padding: 1rem 1rem 0.75rem;
+    color: #1f2937;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.overflow-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 1rem 1rem;
+    min-height: 0;
+}
+
+.overflow-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.overflow-wrapper::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 3px;
+}
+
+.overflow-wrapper::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
 
 ul {
+    position: relative;
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     align-items: flex-end;
     gap: 0.5rem;
     padding: 0;
     margin: 0;
-}
-
-h3 {
-    align-items: flex-end;
-    text-align: end;
-    margin-right: 20px;
+    width: 100%; 
 }
 
 .historic-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.5rem;
+    gap: 0.75rem;
 
-    width: 100px;
-    padding: 0.3rem 0.5rem;
+    width: 110px;
+    padding: 0.5rem 0.75rem;
 
-    background: #f6f6f6;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
 
-    transition: background 0.2s ease, transform 0.1s ease;
+    transition: all 0.2s ease;
 }
-
 
 /* Historic Animation */
 .historic-row-enter-active,
 .historic-row-leave-active,
 .historic-row-move {
-  transition: all 0.5s ease;
+  transition: all 0.4s ease;
 }
 .historic-row-enter-from,
 .historic-row-leave-to {
@@ -83,24 +114,32 @@ h3 {
   position: absolute;
 }
 
-/* Hover léger */
 .historic-row:hover {
-    background: #eeeeee;
+    background: white;
+    border-color: #d1d5db;
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Numéro */
 .historic-row p {
     margin: 0;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.2rem;
+    color: #1f2937;
 }
 
-.historic-row:last-child {
-    background-color: #d9f0ff;
+.historic-row:first-child {
+    background: linear-gradient(135deg, rgba(240, 147, 251, 0.15) 0%, rgba(245, 87, 108, 0.15) 100%);
+    border-color: rgba(240, 147, 251, 0.3);
 }
 
-/* Bouton delete */
+.historic-row:first-child p {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
 .delete {
     border: none;
     background: transparent;
@@ -108,39 +147,27 @@ h3 {
 
     font-size: 0.85rem;
     font-weight: bold;
-    color: #999;
+    color: #9ca3af;
 
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
     flex-shrink: 0;
 
     transition: color 0.2s ease, background 0.2s ease;
 }
 
 .delete:hover {
-    color: #c0392b;
-    background: rgba(192, 57, 43, 0.1);
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
 }
 
 @media (max-width: 900px) {
     .historic-row {
-        padding: 0.3rem 0.5rem;
+        padding: 0.4rem 0.6rem;
+        width: 100px;
     }
     .historic-row p {
         font-size: 1rem;
-    }
-    .delete {
-        font-size: 0.75rem;
-        padding: 0.15rem 0.3rem;
-    }
-}
-
-@media (max-width: 700px) {
-    .historic-row {
-        padding: 0.25rem 0.4rem;
-    }
-    .historic-row p {
-        font-size: 0.9rem;
     }
 }
 </style>

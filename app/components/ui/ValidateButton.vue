@@ -9,8 +9,8 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-    <button :type="type" class="btn-validate">
-        <svg width="20" height="20" fill="#000000" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
+    <button :type="type" class="btn-validate" aria-label="Validate">
+        <svg width="20" height="20" fill="#000000" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M1827.701 303.065 698.835 1431.801 92.299 825.266 0 917.564 698.835 1616.4 1919.869 395.234z" fill-rule="evenodd"></path>
         </svg>
     </button>
@@ -20,48 +20,45 @@ withDefaults(defineProps<Props>(), {
 .btn-validate {
     width: 45px;
     height: 45px;
-    border-radius: 50%; /* rond parfait */
+    border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
 
-    background-color: #4CAF50; /* vert principal */
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
     border: none;
     cursor: pointer;
 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-    transition: transform 0.1s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-validate:hover {
-    background-color: #45a049;
-    box-shadow: 0 6px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5);
     transform: translateY(-2px);
 }
 
 .btn-validate:active {
     transform: scale(0.95);
-    box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.4);
 }
 
 .btn-validate:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.4);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
 }
 
 .btn-validate:disabled {
-    background-color: #9e9e9e;
+    background: #d1d5db;
     cursor: not-allowed;
     box-shadow: none;
     transform: none;
 }
 
-/* SVG icon harmonisé */
 .btn-validate svg {
     width: 20px;
     height: 20px;
-    fill: white; /* force la couleur du check */
+    fill: white;
 }
-
 </style>

@@ -8,12 +8,15 @@ export function createBingoFromSettings(
     name: string,
     type: BingoType,
     maxNumber: number,
-    minNumber: number = 1
+    minNumber: number = 1,
+    order: number = 0
 ): Bingo {
     return {
         id,
+        order,
         drawnNumbers: [],
         isFinished: false,
+        prizeIds : [],
         settings: {
             name: name,
             type: type,

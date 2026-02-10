@@ -1,9 +1,14 @@
-import type { Bingo, WebSocketMessage } from '~/types/bingo'
-import { ref, onUnmounted } from 'vue'
+import type { Bingo, Prize, Sponsor, WebSocketMessage } from '~/types/bingo'
+import { ref } from 'vue'
 
 const socket = ref<WebSocket | null>(null)
 const isConnected = ref(false)
 const bingoState = ref<Bingo | null>(null)
+const lotoName = ref<string>('')
+const lotoSubtitle = ref<string>('')
+const lotoLogo = ref<string | null>(null)
+const prizeState = ref<Prize | null>(null)
+const sponsorState = ref<Sponsor | null>(null)
 let onSyncRequested: (() => void) | null = null
 
 const connectionError = ref<string | null>(null)
@@ -37,9 +42,8 @@ export function useWebSocket() {
         socket.value?.close();
     }
 
-    onUnmounted(() => {
-        destroy();
-    })
+    // Note: Don't call destroy() on unmount since this is a singleton
+    // The WebSocket should stay open while the app is running
 
     function connect(serverIP: string = window.location.hostname): void {
         if (socket.value?.readyState === WebSocket.OPEN) {
@@ -64,7 +68,37 @@ export function useWebSocket() {
                 const data: WebSocketMessage = JSON.parse(event.data)
 
                 if (data.type === "SYNC") {
+                    const previousBingoId = bingoState.value?.id
                     bingoState.value = data.bingo ?? null
+
+                    if (data.lotoName !== undefined) {
+                        lotoName.value = data.lotoName
+                    }
+                    if (data.lotoSubtitle !== undefined) {
+                        lotoSubtitle.value = data.lotoSubtitle
+                    }
+                    if (data.lotoLogo !== undefined) {
+                        lotoLogo.value = data.lotoLogo
+                    }
+
+                    // If bingo changed, clear prize (will be updated if new bingo has one)
+                    if (data.bingo?.id !== previousBingoId) {
+                        prizeState.value = null
+                    }
+                    // Update prize if provided
+                    if (data.prize) {
+                        prizeState.value = data.prize
+                    }
+                    // Update sponsor if provided
+                    if (data.sponsor !== undefined) {
+                        sponsorState.value = data.sponsor ?? null
+                    }
+                }
+                else if (data.type === "SYNC_PRIZE") {
+                    prizeState.value = data.prize ?? null
+                }
+                else if (data.type === "SYNC_SPONSOR") {
+                    sponsorState.value = data.sponsor ?? null
                 }
                 else if (data.type === "REQUEST_SYNC") {
                     if (onSyncRequested) {
@@ -94,12 +128,27 @@ export function useWebSocket() {
 
     function send(data: WebSocketMessage): void {
         if (socket.value?.readyState === WebSocket.OPEN) {
-            socket.value.send(JSON.stringify(data))
+            const message = JSON.stringify(data)
+            console.log("WebSocket sending:", message)
+            socket.value.send(message)
         }
     }
 
-    function syncBingo(bingo: Bingo): void {
-        send({ type: "SYNC", bingo })
+    function syncBingo(bingo: Bingo, options?: { prize?: Prize | null, lotoName?: string, lotoSubtitle?: string, lotoLogo?: string | null }): void {
+        const message: WebSocketMessage = { type: "SYNC", bingo }
+        if (options?.lotoName !== undefined) message.lotoName = options.lotoName
+        if (options?.lotoSubtitle !== undefined) message.lotoSubtitle = options.lotoSubtitle
+        if (options?.lotoLogo !== undefined) message.lotoLogo = options.lotoLogo
+        if (options?.prize) message.prize = options.prize
+        send(message)
+    }
+
+    function syncPrize(prize: Prize | null): void {
+        send({ type: "SYNC_PRIZE", prize })
+    }
+
+    function syncSponsor(sponsor: Sponsor | null): void {
+        send({ type: "SYNC_SPONSOR", sponsor })
     }
 
     function requestSync(): void {
@@ -117,12 +166,21 @@ export function useWebSocket() {
     return {
         isConnected,
         bingoState,
+        lotoName,
+        lotoSubtitle,
+        lotoLogo,
+        prizeState,
+        sponsorState,
         connectionError,
         connect,
         send,
         syncBingo,
+        syncPrize,
+        syncSponsor,
         requestSync,
         onRequestSync,
         disconnected,
+        retryDelay,
+        resetDelay
     }
 }
