@@ -2,33 +2,48 @@
   "name": "lotobingo",
   "version": "1.0.0",
   "description": "Application web de gestion de loto/bingo en temps réel",
-  "type": "module",
-  "license": "AGPL-3.0",
+  "main": "electron/main.cjs",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "test": "vitest"
+    "preview": "nuxt preview",
+    "test": "vitest",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "dependencies": {
     "@nuxtjs/i18n": "^10.2.1",
     "@pinia/nuxt": "^0.11.3",
+    "electron-squirrel-startup": "^1.0.1",
     "nuxt": "^4.3.0",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
     "playwright": "^1.58.1",
-    "vue": "^3.5.27",
+    "tree-kill": "^1.2.2",
+    "vue": "^3.5.28",
     "vue-router": "^4.6.4",
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^7.11.1",
+    "@electron-forge/maker-deb": "^7.11.1",
+    "@electron-forge/maker-rpm": "^7.11.1",
+    "@electron-forge/maker-squirrel": "^7.11.1",
+    "@electron-forge/maker-zip": "^7.11.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.11.1",
+    "@electron-forge/plugin-fuses": "^7.11.1",
+    "@electron/fuses": "^1.8.0",
     "@nuxt/test-utils": "^3.23.0",
     "@pinia/testing": "^1.0.3",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vue/test-utils": "^2.4.6",
+    "electron": "40.3.0",
     "jsdom": "^27.4.0",
     "vitest": "^3.2.4"
-  }
+  },
+  "license": "AGPL-3.0",
+  "type": "module"
 }

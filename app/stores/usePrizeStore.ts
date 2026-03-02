@@ -8,7 +8,6 @@ export const usePrizeStore = defineStore('prize', {
   }),
   persist: {
     key: 'prize-state',
-    storage: localStorage
   },
   getters: {
     nextId(): number {

@@ -35,7 +35,6 @@ export const useCardStyleStore = defineStore('cardStyle', {
 
   persist: {
     key: 'card-style-state',
-    storage: localStorage,
     pick: ['styles', 'distributionMode', 'selectedStyleIndex']
   },
 

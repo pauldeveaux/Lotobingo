@@ -19,7 +19,6 @@ export const useBingoStore = defineStore('bingo', {
     }),
     persist: {
         key: 'bingo-state',
-        storage: localStorage,
         pick: ['bingos', 'lotoName', 'lotoSubtitle', 'lotoLogo']
     },
     getters: {

@@ -22,9 +22,6 @@ const props = defineProps({
 
 <style scoped>
 .sponsor-showcase {
-    bottom: 2rem;
-    right: 2rem;
-    z-index: 100;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -67,8 +64,6 @@ const props = defineProps({
 
 @media (max-width: 768px) {
     .sponsor-showcase {
-        bottom: 1rem;
-        right: 1rem;
         padding: 0.75rem 1rem;
     }
 
@@ -84,9 +79,6 @@ const props = defineProps({
 
 @media (max-width: 480px) {
     .sponsor-showcase {
-        position: relative;
-        bottom: auto;
-        right: auto;
         margin: 1rem auto;
     }
 }

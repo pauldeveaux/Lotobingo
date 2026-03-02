@@ -12,10 +12,15 @@ describe('useClientStyleStore', () => {
 
     describe('initial state', () => {
         it('has correct default layout values', () => {
-            expect(store.prizePosition).toBe('right')
-            expect(store.sponsorPosition).toBe('left')
+            expect(store.gridX).toBe(50)
+            expect(store.gridY).toBe(50)
+            expect(store.prizeX).toBe(85)
+            expect(store.prizeY).toBe(50)
+            expect(store.prizeVisible).toBe(true)
+            expect(store.sponsorX).toBe(15)
+            expect(store.sponsorY).toBe(50)
+            expect(store.sponsorVisible).toBe(true)
             expect(store.gridSizePercent).toBe(80)
-            expect(store.gridPosition).toBe('center')
             expect(store.prizeImageSize).toBe(300)
             expect(store.sponsorImageSize).toBe(300)
             expect(store.logoSize).toBe(64)
@@ -59,22 +64,22 @@ describe('useClientStyleStore', () => {
         })
 
         it('updates layout fields', () => {
-            store.update({ prizePosition: 'left', gridSizePercent: 90, ballVolume: false })
+            store.update({ gridX: 30, gridSizePercent: 90, ballVolume: false })
 
-            expect(store.prizePosition).toBe('left')
+            expect(store.gridX).toBe(30)
             expect(store.gridSizePercent).toBe(90)
             expect(store.ballVolume).toBe(false)
         })
 
-        it('supports all valid positions for prize and sponsor', () => {
-            store.update({ prizePosition: 'left' })
-            expect(store.prizePosition).toBe('left')
+        it('supports position and visibility for prize and sponsor', () => {
+            store.update({ prizeX: 20, prizeY: 80, prizeVisible: false })
+            expect(store.prizeX).toBe(20)
+            expect(store.prizeY).toBe(80)
+            expect(store.prizeVisible).toBe(false)
 
-            store.update({ sponsorPosition: 'right' })
-            expect(store.sponsorPosition).toBe('right')
-
-            store.update({ prizePosition: 'hidden' })
-            expect(store.prizePosition).toBe('hidden')
+            store.update({ sponsorX: 70, sponsorVisible: false })
+            expect(store.sponsorX).toBe(70)
+            expect(store.sponsorVisible).toBe(false)
         })
     })
 
@@ -83,7 +88,8 @@ describe('useClientStyleStore', () => {
             store.update({
                 backgroundColor: '#000000',
                 titleColor: '#ff0000',
-                prizePosition: 'hidden',
+                prizeVisible: false,
+                gridX: 10,
                 gridSizePercent: 60,
                 ballVolume: false,
             })
@@ -92,7 +98,8 @@ describe('useClientStyleStore', () => {
 
             expect(store.backgroundColor).toBe('#ffffff')
             expect(store.titleColor).toBe('#000000')
-            expect(store.prizePosition).toBe('right')
+            expect(store.prizeVisible).toBe(true)
+            expect(store.gridX).toBe(50)
             expect(store.gridSizePercent).toBe(80)
             expect(store.ballVolume).toBe(true)
         })

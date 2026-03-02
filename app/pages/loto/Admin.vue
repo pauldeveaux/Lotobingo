@@ -11,24 +11,44 @@ import BingoChoice from "~/components/loto/admin/BingoChoice.vue";
 import PrizeSelector from "~/components/prize/PrizeSelector.vue";
 import SponsorSelector from "~/components/sponsor/SponsorSelector.vue";
 import CardVerificator from "~/components/card/CardVerificator.vue";
+import { useClientStyleStore } from "~/stores/useClientStyleStore";
 
 const bingoStore = useBingoStore();
 const prizeStore = usePrizeStore();
 const sponsorStore = useSponsorStore();
-const { connect, syncBingo, syncPrize, syncSponsor, onRequestSync, isConnected } =
-  useWebSocket();
+const clientStyleStore = useClientStyleStore();
+const {
+  connect,
+  syncBingo,
+  syncPrize,
+  syncSponsor,
+  syncStyle,
+  onRequestSync,
+  isConnected,
+} = useWebSocket();
 
-// Selected prize (independent from bingo)
-const selectedPrizeId = ref<number | null>(null);
+// Persist selected prize/sponsor IDs across reloads
+function persistedRef(key: string) {
+  const stored = import.meta.client ? localStorage.getItem(key) : null;
+  const r = ref<number | null>(stored ? Number(stored) : null);
+  watch(r, (v) => {
+    if (import.meta.client) {
+      v != null
+        ? localStorage.setItem(key, String(v))
+        : localStorage.removeItem(key);
+    }
+  });
+  return r;
+}
+
+const selectedPrizeId = persistedRef("admin-selected-prize");
+const selectedSponsorId = persistedRef("admin-selected-sponsor");
 
 const selectedPrize = computed(() => {
   return selectedPrizeId.value
     ? prizeStore.getPrize(selectedPrizeId.value)
     : null;
 });
-
-// Selected sponsor (independent from bingo)
-const selectedSponsorId = ref<number | null>(null);
 
 const selectedSponsor = computed(() => {
   return selectedSponsorId.value
@@ -51,12 +71,13 @@ const lotoInfo = computed(() => ({
   lotoName: bingoStore.lotoName,
   lotoSubtitle: bingoStore.lotoSubtitle,
   lotoLogo: bingoStore.lotoLogo,
-}))
+}));
 
 function syncAll(): void {
   syncBingo(bingoStore.bingo, lotoInfo.value);
   syncPrize(selectedPrize.value);
   syncSponsor(selectedSponsor.value);
+  syncStyle(clientStyleStore.$state);
 }
 
 // Sync bingo WITHOUT prize (number draws, state changes)
@@ -121,7 +142,9 @@ function resetBingo(): void {
   <div class="admin-page">
     <header class="admin-header">
       <h1>Admin<span>istration</span></h1>
-      <p class="current-game">{{ bingoStore.lotoName }} — {{ bingoStore.bingo.settings.name }}</p>
+      <p class="current-game">
+        {{ bingoStore.lotoName }} — {{ bingoStore.bingo.settings.name }}
+      </p>
     </header>
 
     <div id="loto-view">
@@ -219,11 +242,14 @@ function resetBingo(): void {
   font-weight: 500;
 }
 
-/* Main Grid Layout */
+/* Main Grid Layout — center column = 10×52px cells + 9×6px gaps + 8px padding */
 #loto-view {
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(210px, 450px) 1fr minmax(210px, 450px);
+  grid-template-columns:
+    minmax(0, 1fr)
+    calc(11 * 52px + 9 * 6px + 8px)
+    minmax(0, 1fr);
   gap: 0.75rem;
   min-height: 0;
   overflow: hidden;
@@ -235,6 +261,7 @@ function resetBingo(): void {
   flex-direction: column;
   gap: 0.75rem;
   min-height: 0;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -286,30 +313,24 @@ function resetBingo(): void {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   gap: 0.5rem;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 #bingo-grid {
-  flex: 1 1 auto;
-  min-height: 0;
-  max-width: min(100%, calc(100vh - 200px));
-  max-height: calc(100% - 200px);
-  width: auto;
-  height: auto;
+  flex: 0 0 auto;
 }
 
 /* Controls under grid */
 .controls {
   flex-shrink: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 1rem;
   justify-content: center;
-  margin: 30px;
+  margin: 20px;
 }
 
 .add-number-wrapper {
@@ -331,6 +352,7 @@ function resetBingo(): void {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -382,6 +404,33 @@ function resetBingo(): void {
   border-radius: 12px;
   padding: 0.6rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* Force side panel content to fit in narrow containers */
+.left-column :deep(*),
+.right-column :deep(*) {
+  min-width: 0;
+}
+
+.left-column :deep(.historic-row) {
+  width: 100%;
+}
+
+.right-column :deep(.bingo-choice) {
+  min-width: unset;
+}
+
+.left-column :deep(.prize-name),
+.left-column :deep(.prize-provider),
+.left-column :deep(.sponsor-name),
+.right-column :deep(.prize-name),
+.right-column :deep(.prize-provider),
+.right-column :deep(.sponsor-name),
+.right-column :deep(.name) {
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #bingo-choice h3,
@@ -439,9 +488,9 @@ function resetBingo(): void {
 }
 
 /* Responsive */
-@media (max-width: 1100px) {
-  #loto-view {
-    grid-template-columns: 190px 1fr minmax(200px, 260px);
+@media (max-width: 1400px) {
+  .controls {
+    margin: 15px;
   }
 }
 
@@ -453,9 +502,13 @@ function resetBingo(): void {
     padding: 0.5rem;
   }
 
+  .admin-header h1 {
+    font-size: 1.25rem;
+  }
+
   #loto-view {
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
+    grid-template-rows: auto 1fr;
   }
 
   .left-column {
@@ -486,12 +539,14 @@ function resetBingo(): void {
   }
 
   #bingo-grid {
-    max-height: none;
+    max-width: min(100%, 70vh);
+    max-height: 50vh;
   }
 
   .controls {
     flex-wrap: wrap;
     justify-content: center;
+    margin: 10px;
   }
 }
 
@@ -502,6 +557,18 @@ function resetBingo(): void {
     min-height: calc(100vh - 100px);
     overflow: auto;
     padding: 0.5rem;
+  }
+
+  .admin-header h1 {
+    font-size: 1.1rem;
+  }
+
+  .admin-header h1 span {
+    display: none;
+  }
+
+  .current-game {
+    font-size: 0.75rem;
   }
 
   #loto-view {
@@ -552,7 +619,7 @@ function resetBingo(): void {
 
   #bingo-grid {
     max-width: 100%;
-    max-height: none;
+    max-height: 60vh;
   }
 
   .controls {
@@ -560,6 +627,7 @@ function resetBingo(): void {
     align-items: stretch;
     gap: 0.5rem;
     width: 100%;
+    margin: 8px 0;
   }
 
   .add-number-wrapper {
@@ -569,7 +637,7 @@ function resetBingo(): void {
   .add-number-wrapper :deep(#add-number-form) {
     max-width: 100%;
     margin: 0;
-    padding: 1rem;
+    padding: 0.75rem;
   }
 
   #action-buttons {
@@ -578,8 +646,8 @@ function resetBingo(): void {
   }
 
   #action-buttons button {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
     min-height: 44px;
   }
 }

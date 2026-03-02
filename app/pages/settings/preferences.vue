@@ -2,31 +2,46 @@
 import { useClientStyleStore } from '~/stores/useClientStyleStore'
 
 const style = useClientStyleStore()
+const bgImageInput = ref<HTMLInputElement | null>(null)
 
-const positionOptions = [
-  { value: 'left', label: 'Gauche' },
-  { value: 'right', label: 'Droite' },
-  { value: 'hidden', label: 'Masquer' },
-] as const
-
-const gridPositionOptions = [
-  { value: 'left', label: 'Gauche' },
-  { value: 'center', label: 'Centre' },
-  { value: 'right', label: 'Droite' },
-] as const
-
-// Swap: prize and sponsor can't share the same non-hidden side
-watch(() => style.prizePosition, (newPos, oldPos) => {
-  if (newPos !== 'hidden' && newPos === style.sponsorPosition) {
-    style.sponsorPosition = (oldPos && oldPos !== 'hidden') ? oldPos : (newPos === 'left' ? 'right' : 'left')
+function onBgImageChange(event: Event): void {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    style.backgroundImage = e.target?.result as string
   }
+  reader.readAsDataURL(file)
+}
+const bingoStore = useBingoStore()
+const prizeStore = usePrizeStore()
+const sponsorStore = useSponsorStore()
+const { connect, syncBingo, syncPrize, syncSponsor, syncStyle, onRequestSync, isConnected } = useWebSocket()
+
+const lotoInfo = computed(() => ({
+  lotoName: bingoStore.lotoName,
+  lotoSubtitle: bingoStore.lotoSubtitle,
+  lotoLogo: bingoStore.lotoLogo,
+}))
+
+function syncAll(): void {
+  syncBingo(bingoStore.bingo, lotoInfo.value)
+  syncStyle(style.$state)
+}
+
+onMounted(() => {
+  connect()
+  onRequestSync(() => syncAll())
 })
 
-watch(() => style.sponsorPosition, (newPos, oldPos) => {
-  if (newPos !== 'hidden' && newPos === style.prizePosition) {
-    style.prizePosition = (oldPos && oldPos !== 'hidden') ? oldPos : (newPos === 'left' ? 'right' : 'left')
-  }
+watch(isConnected, (connected) => {
+  if (connected) syncAll()
 })
+
+// Sync style to client via WebSocket whenever it changes
+watch(() => style.$state, () => {
+  syncStyle(style.$state)
+}, { deep: true })
 </script>
 
 <template>
@@ -84,13 +99,16 @@ watch(() => style.sponsorPosition, (newPos, oldPos) => {
           <label>Taille de la grille : {{ style.gridSizePercent }}%</label>
           <input type="range" v-model.number="style.gridSizePercent" min="60" max="95" step="1" />
         </div>
+      </div>
+
+      <div class="row">
         <div class="field">
-          <label>Position de la grille</label>
-          <select v-model="style.gridPosition">
-            <option v-for="opt in gridPositionOptions" :key="opt.value" :value="opt.value">
-              {{ opt.label }}
-            </option>
-          </select>
+          <label>Position X grille : {{ style.gridX }}%</label>
+          <input type="range" v-model.number="style.gridX" min="0" max="100" step="1" />
+        </div>
+        <div class="field">
+          <label>Position Y grille : {{ style.gridY }}%</label>
+          <input type="range" v-model.number="style.gridY" min="0" max="100" step="1" />
         </div>
       </div>
 
@@ -99,6 +117,24 @@ watch(() => style.sponsorPosition, (newPos, oldPos) => {
           <input type="checkbox" v-model="style.ballVolume" />
           Effet 3D sur les boules
         </label>
+      </div>
+
+      <div class="field">
+        <label>Image de fond</label>
+        <div class="bg-image-controls">
+          <input ref="bgImageInput" type="file" accept="image/*" style="display:none" @change="onBgImageChange" />
+          <button type="button" class="upload-btn" @click="(bgImageInput as HTMLInputElement).click()">
+            {{ style.backgroundImage ? 'Changer l\'image' : 'Choisir une image' }}
+          </button>
+          <button v-if="style.backgroundImage" type="button" class="remove-btn" @click="style.backgroundImage = null">
+            Supprimer
+          </button>
+        </div>
+      </div>
+
+      <div v-if="style.backgroundImage" class="field">
+        <label>Opacité : {{ Math.round(style.backgroundImageOpacity * 100) }}%</label>
+        <input type="range" v-model.number="style.backgroundImageOpacity" min="0" max="1" step="0.05" />
       </div>
 
       <div class="color-row">
@@ -114,6 +150,10 @@ watch(() => style.sponsorPosition, (newPos, oldPos) => {
           <label>Boule tirée</label>
           <input type="color" v-model="style.ballDrawnColor" />
         </div>
+        <div class="color-field">
+          <label>Animation</label>
+          <input type="color" v-model="style.ballAnimationColor" />
+        </div>
       </div>
     </section>
 
@@ -121,15 +161,25 @@ watch(() => style.sponsorPosition, (newPos, oldPos) => {
     <section class="settings-section">
       <h3>Lot</h3>
 
+      <div class="field checkbox-field">
+        <label>
+          <input type="checkbox" v-model="style.prizeVisible" />
+          Afficher le lot
+        </label>
+      </div>
+
       <div class="row">
         <div class="field">
-          <label>Position</label>
-          <select v-model="style.prizePosition">
-            <option v-for="opt in positionOptions" :key="opt.value" :value="opt.value">
-              {{ opt.label }}
-            </option>
-          </select>
+          <label>Position X : {{ style.prizeX }}%</label>
+          <input type="range" v-model.number="style.prizeX" min="0" max="100" step="1" />
         </div>
+        <div class="field">
+          <label>Position Y : {{ style.prizeY }}%</label>
+          <input type="range" v-model.number="style.prizeY" min="0" max="100" step="1" />
+        </div>
+      </div>
+
+      <div class="row">
         <div class="field">
           <label>Taille image : {{ style.prizeImageSize }}px</label>
           <input type="range" v-model.number="style.prizeImageSize" min="100" max="500" step="10" />
@@ -164,15 +214,25 @@ watch(() => style.sponsorPosition, (newPos, oldPos) => {
     <section class="settings-section">
       <h3>Sponsor</h3>
 
+      <div class="field checkbox-field">
+        <label>
+          <input type="checkbox" v-model="style.sponsorVisible" />
+          Afficher le sponsor
+        </label>
+      </div>
+
       <div class="row">
         <div class="field">
-          <label>Position</label>
-          <select v-model="style.sponsorPosition">
-            <option v-for="opt in positionOptions" :key="opt.value" :value="opt.value">
-              {{ opt.label }}
-            </option>
-          </select>
+          <label>Position X : {{ style.sponsorX }}%</label>
+          <input type="range" v-model.number="style.sponsorX" min="0" max="100" step="1" />
         </div>
+        <div class="field">
+          <label>Position Y : {{ style.sponsorY }}%</label>
+          <input type="range" v-model.number="style.sponsorY" min="0" max="100" step="1" />
+        </div>
+      </div>
+
+      <div class="row">
         <div class="field">
           <label>Taille image : {{ style.sponsorImageSize }}px</label>
           <input type="range" v-model.number="style.sponsorImageSize" min="100" max="500" step="10" />
@@ -321,6 +381,43 @@ watch(() => style.sponsorPosition, (newPos, oldPos) => {
   padding: 2px;
   cursor: pointer;
   background: none;
+}
+
+.bg-image-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.upload-btn,
+.remove-btn {
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid #d1d5db;
+  transition: background 0.15s;
+}
+
+.upload-btn {
+  background: #ede9fe;
+  color: #4f46e5;
+  border-color: #c4b5fd;
+}
+
+.upload-btn:hover {
+  background: #ddd6fe;
+}
+
+.remove-btn {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.remove-btn:hover {
+  background: #fecaca;
 }
 
 .reset-btn {

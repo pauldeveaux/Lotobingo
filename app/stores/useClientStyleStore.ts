@@ -2,10 +2,15 @@ import { defineStore } from 'pinia'
 
 export interface ClientStyle {
   // Layout
-  prizePosition: 'left' | 'right' | 'hidden'
-  sponsorPosition: 'left' | 'right' | 'hidden'
+  gridX: number
+  gridY: number
+  prizeX: number
+  prizeY: number
+  prizeVisible: boolean
+  sponsorX: number
+  sponsorY: number
+  sponsorVisible: boolean
   gridSizePercent: number
-  gridPosition: 'left' | 'center' | 'right'
   prizeImageSize: number
   sponsorImageSize: number
   logoSize: number
@@ -14,6 +19,10 @@ export interface ClientStyle {
   bingoNameFontSize: number
   ballVolume: boolean
 
+  // Background
+  backgroundImage: string | null
+  backgroundImageOpacity: number
+
   // Colors
   backgroundColor: string
   titleColor: string
@@ -21,6 +30,7 @@ export interface ClientStyle {
   bingoNameColor: string
   ballColor: string
   ballDrawnColor: string
+  ballAnimationColor: string
   prizePanelColor: string
   prizeBadgeColor: string
   prizeTextColor: string
@@ -32,17 +42,25 @@ export interface ClientStyle {
 }
 
 const defaults: ClientStyle = {
-  prizePosition: 'right',
-  sponsorPosition: 'left',
-  gridSizePercent: 80,
-  gridPosition: 'center',
-  prizeImageSize: 300,
-  sponsorImageSize: 300,
+  gridX: 37,
+  gridY: 50,
+  prizeX: 91,
+  prizeY: 31,
+  prizeVisible: true,
+  sponsorX: 91,
+  sponsorY: 81,
+  sponsorVisible: true,
+  gridSizePercent: 82,
+  prizeImageSize: 340,
+  sponsorImageSize: 340,
   logoSize: 64,
   titleFontSize: 2,
   subtitleFontSize: 1,
   bingoNameFontSize: 1.2,
   ballVolume: true,
+
+  backgroundImage: null,
+  backgroundImageOpacity: 1,
 
   backgroundColor: '#ffffff',
   titleColor: '#000000',
@@ -50,6 +68,7 @@ const defaults: ClientStyle = {
   bingoNameColor: '#6b7280',
   ballColor: '#6392cc',
   ballDrawnColor: '#e74c3c',
+  ballAnimationColor: '#6392cc',
   prizePanelColor: '#ffffff',
   prizeBadgeColor: '#ef4444',
   prizeTextColor: '#374151',
@@ -65,7 +84,6 @@ export const useClientStyleStore = defineStore('clientStyle', {
 
   persist: {
     key: 'client-style-state',
-    storage: localStorage,
   },
 
   actions: {

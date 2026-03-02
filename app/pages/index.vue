@@ -30,6 +30,14 @@ const quickActions = [
   }
 ]
 
+function handleAction(action: { to: string }) {
+  if (action.to === '/loto/client') {
+    window.open(action.to, '_blank')
+  } else {
+    navigateTo(action.to)
+  }
+}
+
 const steps = [
   { title: 'Créez vos parties', description: 'Configurez vos bingos et lots' },
   { title: 'Lancez l\'affichage', description: 'Projetez sur grand écran' },
@@ -82,6 +90,7 @@ const steps = [
           :key="action.title"
           :to="action.to"
           class="action-card"
+          @click.prevent="handleAction(action)"
         >
           <div class="action-icon-wrapper" :style="{ background: action.gradient }">
             <span class="action-icon">{{ action.icon }}</span>

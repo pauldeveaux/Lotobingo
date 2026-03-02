@@ -1,4 +1,5 @@
 import type { Bingo, Prize, Sponsor, WebSocketMessage } from '~/types/bingo'
+import type { ClientStyle } from '~/stores/useClientStyleStore'
 import { ref } from 'vue'
 
 const socket = ref<WebSocket | null>(null)
@@ -9,6 +10,7 @@ const lotoSubtitle = ref<string>('')
 const lotoLogo = ref<string | null>(null)
 const prizeState = ref<Prize | null>(null)
 const sponsorState = ref<Sponsor | null>(null)
+const clientStyleState = ref<ClientStyle | null>(null)
 let onSyncRequested: (() => void) | null = null
 
 const connectionError = ref<string | null>(null)
@@ -100,6 +102,11 @@ export function useWebSocket() {
                 else if (data.type === "SYNC_SPONSOR") {
                     sponsorState.value = data.sponsor ?? null
                 }
+                else if (data.type === "SYNC_STYLE") {
+                    if (data.clientStyle) {
+                        clientStyleState.value = data.clientStyle as ClientStyle
+                    }
+                }
                 else if (data.type === "REQUEST_SYNC") {
                     if (onSyncRequested) {
                         onSyncRequested()
@@ -151,6 +158,11 @@ export function useWebSocket() {
         send({ type: "SYNC_SPONSOR", sponsor })
     }
 
+    function syncStyle(style: ClientStyle): void {
+        clientStyleState.value = style
+        send({ type: "SYNC_STYLE", clientStyle: style as unknown as Record<string, unknown> })
+    }
+
     function requestSync(): void {
         send({ type: "REQUEST_SYNC" })
     }
@@ -171,12 +183,14 @@ export function useWebSocket() {
         lotoLogo,
         prizeState,
         sponsorState,
+        clientStyleState,
         connectionError,
         connect,
         send,
         syncBingo,
         syncPrize,
         syncSponsor,
+        syncStyle,
         requestSync,
         onRequestSync,
         disconnected,

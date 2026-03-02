@@ -39,13 +39,14 @@ export interface Position {
 }
 
 export interface WebSocketMessage {
-  type: 'SYNC' | 'SYNC_PRIZE' | 'SYNC_SPONSOR' | 'REQUEST_SYNC'
+  type: 'SYNC' | 'SYNC_PRIZE' | 'SYNC_SPONSOR' | 'SYNC_STYLE' | 'REQUEST_SYNC'
   bingo?: Bingo
   lotoName?: string
   lotoSubtitle?: string
   lotoLogo?: string | null
   prize?: Prize | null
   sponsor?: Sponsor | null
+  clientStyle?: Record<string, unknown>
 }
 
 export interface BingoFormData {

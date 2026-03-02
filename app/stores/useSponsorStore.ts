@@ -8,7 +8,6 @@ export const useSponsorStore = defineStore('sponsor', {
   }),
   persist: {
     key: 'sponsor-state',
-    storage: localStorage
   },
   getters: {
     nextId(): number {

@@ -10,7 +10,6 @@ export const useCardStore = defineStore('card', {
 
   persist: {
     key: 'card-state',
-    storage: localStorage,
     pick: ['cards']
   },
 
