@@ -1,6 +1,6 @@
 # LotoBingo
 
-Application web de gestion de loto/bingo en temps réel, conçue pour les associations, clubs et événements.
+Application de gestion de loto/bingo en temps réel, conçue pour les associations, clubs et événements. Disponible en application web ou desktop (Electron).
 
 [English version below](#english)
 
@@ -34,18 +34,20 @@ Application web de gestion de loto/bingo en temps réel, conçue pour les associ
 
 ## Technologies
 
-- **Nuxt 3** - Framework Vue.js full-stack
+- **Nuxt 4** - Framework Vue.js full-stack
 - **Vue 3** - Framework JavaScript progressif
-- **Pinia** - Gestion d'état
+- **Pinia** - Gestion d'état avec persistance localStorage
 - **TypeScript** - Typage statique
-- **WebSocket** - Communication temps réel
+- **WebSocket** - Communication temps réel (Nitro plugin, port 3001)
+- **Electron** - Application desktop (via Electron Forge)
+- **i18n** - Support multi-langue
 - **Vitest** - Tests unitaires
 
 ## Installation
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/votre-username/lotobingo.git
+git clone https://github.com/pauldeveaux/Lotobingo.git
 cd lotobingo
 
 # Installer les dépendances
@@ -59,6 +61,12 @@ npm run build
 
 # Lancer les tests
 npm run test
+
+# Lancer l'app Electron (desktop, dev)
+npm start
+
+# Packager l'app Electron (distribution)
+npm run make
 ```
 
 ## Utilisation
@@ -139,18 +147,20 @@ Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 ## Tech Stack
 
-- **Nuxt 3** - Full-stack Vue.js framework
+- **Nuxt 4** - Full-stack Vue.js framework
 - **Vue 3** - Progressive JavaScript framework
-- **Pinia** - State management
+- **Pinia** - State management with localStorage persistence
 - **TypeScript** - Static typing
-- **WebSocket** - Real-time communication
+- **WebSocket** - Real-time communication (Nitro plugin, port 3001)
+- **Electron** - Desktop app (via Electron Forge)
+- **i18n** - Multi-language support
 - **Vitest** - Unit testing
 
 ## Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/lotobingo.git
+git clone https://github.com/pauldeveaux/Lotobingo.git
 cd lotobingo
 
 # Install dependencies
@@ -164,6 +174,12 @@ npm run build
 
 # Run tests
 npm run test
+
+# Run Electron app (desktop, dev)
+npm start
+
+# Package the Electron app (distribution)
+npm run make
 ```
 
 ## Usage

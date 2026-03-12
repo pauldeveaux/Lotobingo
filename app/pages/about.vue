@@ -45,11 +45,13 @@ const features = [
     <section class="tech">
       <h2>Technologies</h2>
       <div class="tech-list">
-        <span class="tech-badge">Nuxt 3</span>
+        <span class="tech-badge">Nuxt 4</span>
         <span class="tech-badge">Vue 3</span>
         <span class="tech-badge">TypeScript</span>
         <span class="tech-badge">Pinia</span>
         <span class="tech-badge">WebSocket</span>
+        <span class="tech-badge">Electron</span>
+        <span class="tech-badge">i18n</span>
       </div>
     </section>
 
