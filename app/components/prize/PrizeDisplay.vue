@@ -21,7 +21,7 @@ const props = defineProps({
     />
     <div class="prize-details">
       <p class="prize-name">{{ name }}</p>
-      <p class="prize-value">{{ value }}€</p>
+      <p v-if="value" class="prize-value">{{ value }}€</p>
     </div>
 
     <div v-if="providerName" class="provider-section">
@@ -118,29 +118,4 @@ const props = defineProps({
     color: var(--theme-prize-text-color, #374151);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .prize-showcase {
-        padding: 0.75rem 1rem;
-    }
-
-    .prize-image {
-        width: 70px;
-        height: 70px;
-    }
-
-    .prize-name {
-        font-size: 0.9rem;
-    }
-
-    .prize-value {
-        font-size: 1.1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .prize-showcase {
-        margin: 1rem auto;
-    }
-}
 </style>

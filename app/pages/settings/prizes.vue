@@ -4,6 +4,7 @@ import PrizeList from '~/components/prize/PrizeList.vue'
 import type { PrizeFormData } from '~/types/bingo'
 
 const prizeStore = usePrizeStore()
+const sidebar = ref<{ close: () => void } | null>(null)
 
 const editingPrizeId = ref<number | null>(prizeStore.lastId ? prizeStore.lastId - 1 : null)
 
@@ -37,6 +38,7 @@ function startCreate(): void {
 
 function selectForEdit(id: number): void {
   editingPrizeId.value = id
+  sidebar.value?.close()
 }
 
 function deletePrize(id: number): void {
@@ -55,17 +57,17 @@ function deletePrize(id: number): void {
         :prize-data="editingPrizeData"
         @submit="onSubmit"
       />
-
-      <div class="settings-editor-sidebar">
-        <PrizeList
-          :selected-id="editingPrizeId"
-          show-create
-          @select="selectForEdit"
-          @create="startCreate"
-          @delete="deletePrize"
-        />
-      </div>
     </div>
+
+    <UiEditorSidebar ref="sidebar">
+      <PrizeList
+        :selected-id="editingPrizeId"
+        show-create
+        @select="selectForEdit"
+        @create="startCreate"
+        @delete="deletePrize"
+      />
+    </UiEditorSidebar>
   </div>
 </template>
 

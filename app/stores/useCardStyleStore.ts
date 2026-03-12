@@ -7,6 +7,8 @@ export interface CardStyle {
   title: string
   numberBox: string
   emptyBox: string
+  backgroundImage: string
+  backgroundOverlayOpacity: number
 }
 
 export type DistributionMode = 'uni' | 'random'
@@ -24,6 +26,8 @@ const createDefaultStyle = (): CardStyle => ({
   title: '#000000',
   numberBox: '#e2e8f0',
   emptyBox: '#ffffff',
+  backgroundImage: '',
+  backgroundOverlayOpacity: 0.7,
 })
 
 export const useCardStyleStore = defineStore('cardStyle', {

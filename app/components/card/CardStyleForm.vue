@@ -67,7 +67,6 @@ const colors = defineModel({
   width: 100%;
   margin-top: 5px;
   padding: 4px;
-  border: 1px solid black
 }
 
 .input-group {

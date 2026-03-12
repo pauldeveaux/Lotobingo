@@ -22,8 +22,23 @@ const {
 } = useWebSocket();
 const clientStyle = useClientStyleStore();
 
+function hexToRgba(hex: string, opacity: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${opacity})`;
+}
+
+const bgColor = computed(() => {
+  const opacity = clientStyle.backgroundColorOpacity ?? 1;
+  return opacity < 1
+    ? hexToRgba(clientStyle.backgroundColor, opacity)
+    : clientStyle.backgroundColor;
+});
+
 const cssVars = computed(() => ({
-  "--theme-bg-color": clientStyle.backgroundColor,
+  "--theme-bg-color": bgColor.value,
+  "--theme-bingo-type-color": clientStyle.bingoTypeColor ?? "#f5576c",
   "--theme-title-color": clientStyle.titleColor,
   "--theme-title-font-size": `${clientStyle.titleFontSize}rem`,
   "--theme-ball-color": clientStyle.ballColor,
@@ -132,11 +147,8 @@ function onAnimationComplete(): void {
 </script>
 
 <template>
-  <div
-    class="client-page"
-    :style="{ backgroundColor: clientStyle.backgroundColor }"
-  >
-    <!-- Full-page background image (always rendered when set) -->
+  <div class="client-page">
+    <!-- Full-page background image -->
     <div
       v-if="clientStyle.backgroundImage"
       class="bg-image"
@@ -145,6 +157,8 @@ function onAnimationComplete(): void {
         opacity: clientStyle.backgroundImageOpacity,
       }"
     />
+    <!-- Color overlay on top of background image -->
+    <div class="bg-overlay" :style="{ backgroundColor: bgColor }" />
 
     <div v-if="bingoState && isConnected" class="client-view" :style="cssVars">
       <div class="header-row">
@@ -182,6 +196,7 @@ function onAnimationComplete(): void {
             }"
           >
             {{ bingoState.settings.name }}
+            <span class="bingo-type">{{ bingoState.settings.type }}</span>
           </p>
         </div>
       </div>
@@ -260,7 +275,8 @@ function onAnimationComplete(): void {
 .client-page {
   position: relative;
   height: 100vh;
-  overflow: hidden;
+  overflow: visible;
+  background-color: #0f172a;
 }
 
 .bg-image {
@@ -273,6 +289,13 @@ function onAnimationComplete(): void {
   z-index: 0;
 }
 
+.bg-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .client-view {
   display: flex;
   flex-direction: column;
@@ -281,7 +304,7 @@ function onAnimationComplete(): void {
   height: 100%;
   box-sizing: border-box;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .header-row {
@@ -311,13 +334,29 @@ h1 {
 .bingo-name {
   margin: 0.2rem 0 0 0;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bingo-type {
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75em;
+  font-weight: 600;
+  border-radius: 20px;
+  background-color: color-mix(
+    in srgb,
+    var(--theme-bingo-type-color) 20%,
+    transparent
+  );
+  color: var(--theme-bingo-type-color);
 }
 
 .content-row {
   flex: 1;
   position: relative;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .error-banner {
@@ -335,6 +374,6 @@ h1 {
   flex-direction: column;
   height: 100%;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 </style>

@@ -25,9 +25,11 @@ export interface ClientStyle {
 
   // Colors
   backgroundColor: string
+  backgroundColorOpacity: number
   titleColor: string
   subtitleColor: string
   bingoNameColor: string
+  bingoTypeColor: string
   ballColor: string
   ballDrawnColor: string
   ballAnimationColor: string
@@ -42,41 +44,43 @@ export interface ClientStyle {
 }
 
 const defaults: ClientStyle = {
-  gridX: 37,
-  gridY: 50,
-  prizeX: 91,
-  prizeY: 31,
+  gridX: 31,
+  gridY: 47,
+  prizeX: 88,
+  prizeY: 28,
   prizeVisible: true,
-  sponsorX: 91,
-  sponsorY: 81,
+  sponsorX: 88,
+  sponsorY: 78,
   sponsorVisible: true,
-  gridSizePercent: 82,
-  prizeImageSize: 340,
-  sponsorImageSize: 340,
-  logoSize: 64,
-  titleFontSize: 2,
-  subtitleFontSize: 1,
-  bingoNameFontSize: 1.2,
+  gridSizePercent: 80,
+  prizeImageSize: 300,
+  sponsorImageSize: 280,
+  logoSize: 72,
+  titleFontSize: 2.5,
+  subtitleFontSize: 1.25,
+  bingoNameFontSize: 1.25,
   ballVolume: true,
 
-  backgroundImage: null,
+  backgroundImage: '/default-bg.svg',
   backgroundImageOpacity: 1,
 
-  backgroundColor: '#ffffff',
-  titleColor: '#000000',
-  subtitleColor: '#6b7280',
-  bingoNameColor: '#6b7280',
-  ballColor: '#6392cc',
-  ballDrawnColor: '#e74c3c',
-  ballAnimationColor: '#6392cc',
+  backgroundColor: '#f5f3ff',
+  backgroundColorOpacity: 0.55,
+  titleColor: '#1e1b4b',
+  subtitleColor: '#5b21b6',
+  bingoNameColor: '#4c1d95',
+  bingoTypeColor: '#7c3aed',
+  ballColor: '#818cf8',
+  ballDrawnColor: '#f472b6',
+  ballAnimationColor: '#f472b6',
   prizePanelColor: '#ffffff',
-  prizeBadgeColor: '#ef4444',
-  prizeTextColor: '#374151',
-  prizeValueColor: '#16a34a',
-  prizeProviderLabelColor: '#9ca3af',
+  prizeBadgeColor: '#fb923c',
+  prizeTextColor: '#1e1b4b',
+  prizeValueColor: '#059669',
+  prizeProviderLabelColor: '#7c3aed',
   sponsorPanelColor: '#ffffff',
-  sponsorBadgeColor: '#3b82f6',
-  sponsorTextColor: '#374151',
+  sponsorBadgeColor: '#a78bfa',
+  sponsorTextColor: '#1e1b4b',
 }
 
 export const useClientStyleStore = defineStore('clientStyle', {

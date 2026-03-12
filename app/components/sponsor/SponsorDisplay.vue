@@ -62,24 +62,4 @@ const props = defineProps({
     color: var(--theme-sponsor-text-color, #374151);
 }
 
-@media (max-width: 768px) {
-    .sponsor-showcase {
-        padding: 0.75rem 1rem;
-    }
-
-    .sponsor-image {
-        width: 70px;
-        height: 70px;
-    }
-
-    .sponsor-name {
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .sponsor-showcase {
-        margin: 1rem auto;
-    }
-}
 </style>

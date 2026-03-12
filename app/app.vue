@@ -21,7 +21,7 @@ html, body {
 }
 
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
   overflow-y: auto;
 }
 </style>

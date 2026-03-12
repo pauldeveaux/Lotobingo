@@ -87,6 +87,10 @@ watch(() => style.$state, () => {
           <label>Tirage</label>
           <input type="color" v-model="style.bingoNameColor" />
         </div>
+        <div class="color-field">
+          <label>Tag type</label>
+          <input type="color" v-model="style.bingoTypeColor" />
+        </div>
       </div>
     </section>
 
@@ -141,6 +145,10 @@ watch(() => style.$state, () => {
         <div class="color-field">
           <label>Fond</label>
           <input type="color" v-model="style.backgroundColor" />
+          <div class="opacity-control">
+            <input type="range" v-model.number="style.backgroundColorOpacity" min="0" max="1" step="0.05" />
+            <span class="opacity-label">{{ Math.round((style.backgroundColorOpacity ?? 1) * 100) }}%</span>
+          </div>
         </div>
         <div class="color-field">
           <label>Boule</label>
@@ -381,6 +389,25 @@ watch(() => style.$state, () => {
   padding: 2px;
   cursor: pointer;
   background: none;
+}
+
+.opacity-control {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.opacity-control input[type="range"] {
+  width: 60px;
+  accent-color: #6366f1;
+}
+
+.opacity-label {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  font-family: monospace;
+  white-space: nowrap;
 }
 
 .bg-image-controls {

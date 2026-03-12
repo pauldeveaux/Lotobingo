@@ -4,6 +4,7 @@ import SponsorList from '~/components/sponsor/SponsorList.vue'
 import type { SponsorFormData } from '~/types/sponsor'
 
 const sponsorStore = useSponsorStore()
+const sidebar = ref<{ close: () => void } | null>(null)
 
 const editingSponsorId = ref<number | null>(null)
 
@@ -34,6 +35,7 @@ function startCreate(): void {
 
 function selectForEdit(id: number): void {
   editingSponsorId.value = id
+  sidebar.value?.close()
 }
 
 function deleteSponsor(id: number): void {
@@ -52,17 +54,17 @@ function deleteSponsor(id: number): void {
         :sponsor-data="editingSponsorData"
         @submit="onSubmit"
       />
-
-      <div class="settings-editor-sidebar">
-        <SponsorList
-          :selected-id="editingSponsorId"
-          show-create
-          @select="selectForEdit"
-          @create="startCreate"
-          @delete="deleteSponsor"
-        />
-      </div>
     </div>
+
+    <UiEditorSidebar ref="sidebar">
+      <SponsorList
+        :selected-id="editingSponsorId"
+        show-create
+        @select="selectForEdit"
+        @create="startCreate"
+        @delete="deleteSponsor"
+      />
+    </UiEditorSidebar>
   </div>
 </template>
 

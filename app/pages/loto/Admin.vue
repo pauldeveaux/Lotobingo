@@ -16,6 +16,7 @@ import { useClientStyleStore } from "~/stores/useClientStyleStore";
 const bingoStore = useBingoStore();
 const prizeStore = usePrizeStore();
 const sponsorStore = useSponsorStore();
+const cardStore = useCardStore();
 const clientStyleStore = useClientStyleStore();
 const {
   connect,
@@ -129,6 +130,10 @@ function toggleFinished(): void {
   syncState();
 }
 
+function openAffichage(): void {
+  window.open("/loto/client", "_blank");
+}
+
 function resetBingo(): void {
   if (confirm("Êtes-vous sûr de vouloir réinitialiser le tirage ?")) {
     bingoStore.resetCurrent();
@@ -144,41 +149,54 @@ function resetBingo(): void {
       <h1>Admin<span>istration</span></h1>
       <p class="current-game">
         {{ bingoStore.lotoName }} — {{ bingoStore.bingo.settings.name }}
+        <span class="current-game-type">{{ bingoStore.bingo.settings.type }}</span>
       </p>
     </header>
 
     <div id="loto-view">
       <!-- Left column: Historic + Card Verificator -->
       <div class="left-column">
-        <Historic id="historic" @cancel="removeNumber" />
-        <div id="card-verificator" class="panel">
+        <Historic
+          id="historic"
+          :class="{ dimmed: bingoStore.isFinished, 'historic-full': cardStore.count === 0 }"
+          @cancel="removeNumber"
+        />
+        <div v-if="cardStore.count > 0" id="card-verificator" class="panel">
           <CardVerificator />
         </div>
       </div>
 
       <!-- Center: Grid + Controls -->
       <div class="center-column">
-        <BingoGrid
-          id="bingo-grid"
-          @draw-number="drawNumber($event)"
-          :numbers="bingoStore.balls"
-          :drawn-numbers="bingoStore.drawnNumbers"
-        />
+        <div :class="{ dimmed: bingoStore.isFinished }">
+          <BingoGrid
+            id="bingo-grid"
+            @draw-number="drawNumber($event)"
+            :numbers="bingoStore.balls"
+            :drawn-numbers="bingoStore.drawnNumbers"
+          />
+        </div>
 
         <div class="controls">
           <AddNumber
             class="add-number-wrapper"
+            :class="{ dimmed: bingoStore.isFinished }"
             v-model:last-number="lastNumber"
             @add-number="drawNumber($event)"
           />
           <div id="action-buttons">
-            <button id="reset-btn" @click="resetBingo">Réinitialiser</button>
-            <button
-              @click="toggleFinished"
-              id="finish-btn"
-              :class="{ finished: bingoStore.isFinished }"
-            >
-              {{ bingoStore.bingo.isFinished ? "Reprendre" : "Finaliser" }}
+            <div class="action-buttons-row">
+              <button id="reset-btn" @click="resetBingo">Réinitialiser</button>
+              <button
+                @click="toggleFinished"
+                id="finish-btn"
+                :class="{ finished: bingoStore.isFinished }"
+              >
+                {{ bingoStore.bingo.isFinished ? "Reprendre" : "Finaliser" }}
+              </button>
+            </div>
+            <button class="btn-affichage" @click="openAffichage">
+              📺 Affichage
             </button>
           </div>
         </div>
@@ -221,6 +239,16 @@ function resetBingo(): void {
   padding-bottom: 0.25rem;
 }
 
+.btn-affichage {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+}
+
+.btn-affichage:hover {
+  box-shadow: 0 6px 20px rgba(240, 147, 251, 0.5);
+}
+
 .admin-header h1 {
   font-size: 1.5rem;
   margin: 0;
@@ -240,6 +268,19 @@ function resetBingo(): void {
   color: #6b7280;
   font-size: 0.85rem;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.current-game-type {
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(240, 147, 251, 0.15) 0%, rgba(245, 87, 108, 0.15) 100%);
+  color: #f5576c;
 }
 
 /* Main Grid Layout — center column = 10×52px cells + 9×6px gaps + 8px padding */
@@ -270,6 +311,11 @@ function resetBingo(): void {
   height: 35%;
   min-height: 120px;
   overflow: hidden;
+}
+
+#historic.historic-full {
+  flex: 1 1 auto;
+  height: auto;
 }
 
 #historic :deep(.historic-container) {
@@ -344,7 +390,28 @@ function resetBingo(): void {
 
 #action-buttons {
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
+}
+
+.action-buttons-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dimmed {
+  position: relative;
+  pointer-events: none;
+}
+
+.dimmed::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 12px;
+  z-index: 10;
+  transition: opacity 0.3s ease;
 }
 
 /* Right column - Bingo choice */
@@ -388,9 +455,6 @@ function resetBingo(): void {
   font-size: 0.9rem;
 }
 
-#bingo-choice :deep(.extras) {
-  display: none;
-}
 
 #bingo-choice :deep(.choice-btn) {
   padding: 0.3rem 0.5rem;

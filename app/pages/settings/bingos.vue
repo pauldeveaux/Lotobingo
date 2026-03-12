@@ -5,6 +5,7 @@ import ErrorMessage from "~/components/ui/ErrorMessage.vue";
 import type { BingoFormData } from "~/types/bingo";
 
 const bingoStore = useBingoStore();
+const sidebar = ref<{ close: () => void } | null>(null);
 
 // Local state for editing - doesn't affect the global currentBingoId
 const editingBingoId = ref<number | null>(1);
@@ -42,6 +43,7 @@ function startCreate(): void {
 function selectForEdit(bingoId: number): void {
   editingBingoId.value = bingoId;
   errorMessage.value = "";
+  sidebar.value?.close();
 }
 
 function deleteBingo(bingoId: number): void {
@@ -67,20 +69,20 @@ function deleteBingo(bingoId: number): void {
         :default-title="'Tirage #' + bingoStore.nextId"
         :bingo-settings="editingBingoFormData"
       />
-
-      <div class="settings-editor-sidebar">
-        <BingoChoice
-          @choice="selectForEdit($event)"
-          @create="startCreate"
-          @delete="deleteBingo($event)"
-          :sync-to-store="false"
-          :selected-id="editingBingoId"
-          show-create
-          show-delete
-          draggable
-        />
-      </div>
     </div>
+
+    <UiEditorSidebar ref="sidebar">
+      <BingoChoice
+        @choice="selectForEdit($event)"
+        @create="startCreate"
+        @delete="deleteBingo($event)"
+        :sync-to-store="false"
+        :selected-id="editingBingoId"
+        show-create
+        show-delete
+        draggable
+      />
+    </UiEditorSidebar>
 
     <ErrorMessage :message="errorMessage" @dismiss="errorMessage=''"/>
   </div>

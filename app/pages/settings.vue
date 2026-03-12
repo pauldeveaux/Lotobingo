@@ -1,5 +1,4 @@
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="settings-page">
@@ -23,13 +22,13 @@
 
 <style scoped>
 .settings-page {
+  width: 100%;
   min-height: 100vh;
 }
 
 .settings-content {
   margin-left: 180px;
   padding: 1rem 2rem;
-  max-width: 1100px;
 }
 
 .page-header {
@@ -56,4 +55,5 @@
   color: #6b7280;
   font-size: 1rem;
 }
+
 </style>

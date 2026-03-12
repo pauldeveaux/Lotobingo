@@ -170,6 +170,7 @@ const activeId = computed(() => {
 .bingo-choice {
   min-width: 300px;
   width: 100%;
+  container-type: inline-size;
 }
 
 h3 {
@@ -212,8 +213,7 @@ h3 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex: 0 1 auto;
-  overflow: hidden;
+  flex: 0 0 auto;
 }
 
 .type {
@@ -326,7 +326,7 @@ ul {
   border-radius: 3px;
 }
 
-@media (max-width: 950px) {
+@container (max-width: 450px) {
   .type,
   .extras {
     display: none;

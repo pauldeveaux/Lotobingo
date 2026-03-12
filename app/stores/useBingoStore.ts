@@ -92,6 +92,7 @@ export const useBingoStore = defineStore('bingo', {
         },
         resetCurrent(): void {
             this.bingo.drawnNumbers = []
+            this.bingo.isFinished = false;
         },
         validateDraw(number: number): void {
             if (!this.bingo) {
@@ -130,7 +131,7 @@ export const useBingoStore = defineStore('bingo', {
             if (!this.bingo.drawnNumbers.includes(number))
                 throw new Error("The number was not drawn")
 
-            if(this.bingo.isFinished)
+            if (this.bingo.isFinished)
                 throw new Error("Cannot cancel : the game is finished")
 
             const index = this.bingo.drawnNumbers.indexOf(number)

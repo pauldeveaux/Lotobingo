@@ -166,16 +166,18 @@ main {
     display: block;
   }
 
-  .header-content {
-    flex-wrap: wrap;
-  }
-
   .header-nav {
     display: none;
-    flex-basis: 100%;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
     flex-direction: column;
     gap: 0;
-    padding-bottom: 0.5rem;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 0.5rem 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    z-index: 99;
   }
 
   .header-nav.open {

@@ -18,10 +18,14 @@
 
 /* Editor page layout (bingos, prizes, sponsors) */
 .settings-editor-page {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  column-gap: 1rem;
   width: 100%;
 }
 
-.settings-editor-page h2 {
+.settings-editor-page > h2 {
+  grid-column: 1 / -1;
   text-align: center;
   margin-bottom: 2rem;
   font-size: 1.5rem;
@@ -29,11 +33,10 @@
   font-weight: 700;
 }
 
-.settings-editor-page h2::first-letter {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+
+/* anything that's not the sidebar or h2 spans the full-width row */
+.settings-editor-page > *:not(.settings-editor-sidebar):not(h2) {
+  grid-column: 2;
 }
 
 .settings-editor-content {
@@ -42,25 +45,30 @@
 }
 
 .settings-editor-sidebar {
-  position: fixed;
-  right: 5%;
-  top: 180px;
-  width: 280px;
+  grid-column: 3;
+  grid-row: 2;
+  top: 80px;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 16px;
   padding: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  justify-self: flex-end;
 }
 
-@media (min-width: 1200px) {
-  .settings-editor-sidebar {
-    width: 350px;
+
+@media (max-width: 900px) {
+  .settings-editor-page {
+    grid-template-columns: 1fr; 
   }
-}
 
-@media (min-width: 1600px) {
+  .settings-editor-page > *:not(.settings-editor-sidebar):not(h2) {
+    grid-column: 1;
+  }
+
   .settings-editor-sidebar {
-    width: 420px;
+    grid-column: 1; 
+    grid-row: 3;   
+    justify-self: stretch;
   }
 }
